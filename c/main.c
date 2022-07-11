@@ -9,9 +9,15 @@
 static Clock_T current = {0};
 static Clock_T run = {0};
 static Clock_T objective = {0};
+static int64_t last_sync = 0;
 
 SemaphoreHandle_t xSemaphore;
 static QueueHandle_t queHandle = NULL;
+
+#define HOUR_US (3600000000)
+#define MIN_US  (60000000)
+#define SEC_US  (1000000)
+
 
 void vTaskClockDisplay( void * pvParameters )
 {
@@ -20,18 +26,18 @@ void vTaskClockDisplay( void * pvParameters )
 
 void vTaskObjectivTime( void* parameters)
 {
+    int64_t last_sync = 0;
     int64_t time = 0;
-    int64_t time2 = 0;
-    sleep_ms(1000);
-    printf("Objectiv thread running \n");
     while(1)
     {
-        time2 = time_us_64();
-        if(time2 - time > 1000000*120 )
+        time = time_us_64();
+        if(time - last_sync > 1000000 )
         {
-
-         time = time2;
-         printf("Objective time: %lli \n", time2);
+            objective.hour = (objective.hour + (time - last_sync)/HOUR_US) % 12;
+            objective.min = (objective.min + (time - last_sync)/MIN_US) % 60;
+            objective.sec = (objective.sec + (time - last_sync)/SEC_US) % 60;
+            //last_sync = time;
+            printf("Objectie time: %i : %i : %i  \n", objective.hour, objective.min, objective.sec);
         }
     }
 }
