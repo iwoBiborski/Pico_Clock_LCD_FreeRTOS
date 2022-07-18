@@ -146,7 +146,7 @@ void draw_clock()
     Paint_DrawString_EN((int)ct_11.x - 4, (int)ct_11.y + 2, "11", &Font20, GREEN, BLUE);
 }
 
-int Pico_Clock(Clock_T *current_clk, Clock_T *run_clk)
+int Pico_Clock(Clock_T *current_clk, Clock_T *run_clk, int64_t *last_sync)
 {
     DEV_Delay_ms(100);
 
@@ -229,12 +229,13 @@ int Pico_Clock(Clock_T *current_clk, Clock_T *run_clk)
                     state = CLOCK_RUN;
                     *run_clk = *current_clk;
                 }
+                *last_sync = time_us_64();
                 break;
             }
             case CLOCK_RUN:
             {
                 ts2 = time_us_64()/1000;
-                if(970 <= (ts2 -ts1))
+                if(700 <= (ts2 -ts1))
                 {
                     update_clock(run_clk);
                     ts1 = ts2;
@@ -252,7 +253,6 @@ int Pico_Clock(Clock_T *current_clk, Clock_T *run_clk)
                         draw_hours(current_clk->hour, GREEN);
                         draw_hours(run_clk->hour, RED);
                     }
-                    DEV_Delay_us(7550);
                     *current_clk = *run_clk;
                 }
                 break;
