@@ -8,6 +8,7 @@
 
 static Clock_T current = {0};
 static Clock_T run = {0};
+static Clock_T starting = {0};
 static Clock_T objective = {0};
 static int64_t last_sync = 0;
 
@@ -18,7 +19,7 @@ static int64_t last_sync = 0;
 /* Task which iterates clock and do the display to LCD */
 void vTaskClockDisplay( void * pvParameters )
 {
-        Pico_Clock(&current, &run, &last_sync);
+        Pico_Clock(&current, &run, &objective, &last_sync);
 
 }
 
@@ -37,7 +38,7 @@ void vTaskObjectivTime( void* parameters)
             last_sync = time;
             printf("Objectie time: %i : %i : %i  \n", objective.min, objective.min, objective.sec);
             printf("--------------------------------------\n");
-            if(current.sec != objective.sec)
+            if(current.sec != objective.sec || current.min != objective.min )
             {
                 run.sec = objective.sec;
                 run.min = objective.min;

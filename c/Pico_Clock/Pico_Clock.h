@@ -34,6 +34,6 @@
 
 #include "Infrared.h"
 
-int Pico_Clock(Clock_T *current_clk, Clock_T *run_clk, int64_t *last_sync);
+int Pico_Clock(Clock_T *current_clk, Clock_T *run_clk, Clock_T *starting_clk, int64_t *last_sync);
 
 #endif

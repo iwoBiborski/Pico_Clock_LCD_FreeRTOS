@@ -146,7 +146,7 @@ void draw_clock()
     Paint_DrawString_EN((int)ct_11.x - 4, (int)ct_11.y + 2, "11", &Font20, GREEN, BLUE);
 }
 
-int Pico_Clock(Clock_T *current_clk, Clock_T *run_clk, int64_t *last_sync)
+int Pico_Clock(Clock_T *current_clk, Clock_T *run_clk, Clock_T *starting_clk, int64_t *last_sync)
 {
     DEV_Delay_ms(100);
 
@@ -194,10 +194,23 @@ int Pico_Clock(Clock_T *current_clk, Clock_T *run_clk, int64_t *last_sync)
 
    while(1)
    {
-       if(DEV_Digital_Read(key0) == 0 && DEV_Digital_Read(key1) == 0)
-       {
-           state = CLOCK_INIT;
-       }
+        if(DEV_Digital_Read(key0) == 0 && DEV_Digital_Read(key1) == 0 && state != CLOCK_IMAGE)
+        {
+            state = CLOCK_INIT;
+        }
+        if(DEV_Digital_Read(key3) == 0)
+        {
+            if(state != CLOCK_IMAGE)
+            {
+                state = CLOCK_IMAGE;
+            }
+            else
+            {
+                Paint_Clear(BLACK);
+                draw_clock();
+                state = CLOCK_RUN;
+            }
+        }
         switch(state)
         {
             case WELCOME:
@@ -228,6 +241,7 @@ int Pico_Clock(Clock_T *current_clk, Clock_T *run_clk, int64_t *last_sync)
                 {
                     state = CLOCK_RUN;
                     *run_clk = *current_clk;
+                    *starting_clk = *current_clk;
                 }
                 *last_sync = time_us_64();
                 break;
@@ -235,7 +249,7 @@ int Pico_Clock(Clock_T *current_clk, Clock_T *run_clk, int64_t *last_sync)
             case CLOCK_RUN:
             {
                 ts2 = time_us_64()/1000;
-                if(700 <= (ts2 -ts1))
+                if(680 <= (ts2 -ts1))
                 {
                     update_clock(run_clk);
                     ts1 = ts2;
@@ -257,8 +271,26 @@ int Pico_Clock(Clock_T *current_clk, Clock_T *run_clk, int64_t *last_sync)
                 }
                 break;
             }
+
+            case CLOCK_IMAGE:
+            {
+                ts2 = time_us_64()/1000;
+                if(870 <= (ts2 -ts1))
+                {
+                    update_clock(run_clk);
+                    ts1 = ts2;
+                }
+                *current_clk = *run_clk;
+                sleep_ms(120);
+                Paint_DrawImage1(spider,0,0,320,240);
+                LCD_2IN_Display((UBYTE *)BlackImage);
+                break;
+            }
         }
-        Paint_DrawCircle(160, 120, 3, BLUE, DOT_PIXEL_2X2, DRAW_FILL_FULL);
+        if( state!= CLOCK_IMAGE)
+        {
+            Paint_DrawCircle(160, 120, 3, BLUE, DOT_PIXEL_2X2, DRAW_FILL_FULL);
+        }
         LCD_2IN_Display((uint8_t * )BlackImage);       
    }
 
