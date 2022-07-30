@@ -42,7 +42,7 @@ void vTaskObjectivTime( void* parameters)
             {
                 run.sec = objective.sec;
                 run.min = objective.min;
-                run.hour = objective.min;
+                //run.hour = objective.min;
             }
         }
     }

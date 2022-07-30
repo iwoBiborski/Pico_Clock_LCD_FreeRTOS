@@ -249,7 +249,7 @@ int Pico_Clock(Clock_T *current_clk, Clock_T *run_clk, Clock_T *starting_clk, in
             case CLOCK_RUN:
             {
                 ts2 = time_us_64()/1000;
-                if(680 <= (ts2 -ts1))
+                if(690 <= (ts2 -ts1))
                 {
                     update_clock(run_clk);
                     ts1 = ts2;
@@ -281,7 +281,7 @@ int Pico_Clock(Clock_T *current_clk, Clock_T *run_clk, Clock_T *starting_clk, in
                     ts1 = ts2;
                 }
                 *current_clk = *run_clk;
-                sleep_ms(120);
+                sleep_ms(180);
                 Paint_DrawImage1(spider,0,0,320,240);
                 LCD_2IN_Display((UBYTE *)BlackImage);
                 break;
