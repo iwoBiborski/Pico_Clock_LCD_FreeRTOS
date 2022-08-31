@@ -28,6 +28,7 @@ target_include_directories(FreeRTOS PUBLIC FreeRTOS-Kernel/include include/ Free
 
 
 #添加头文件目录
+include_directories(.)
 include_directories(Pico_Clock)
 include_directories(./lib/Config)
 include_directories(./lib/GUI)
